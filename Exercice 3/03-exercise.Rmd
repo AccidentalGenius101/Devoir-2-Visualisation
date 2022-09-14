@@ -2,7 +2,9 @@
 title: "Exercice 3"
 author: "Ton Nom"
 date: "Date"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 # Tâche 1 : Réflexion
@@ -48,8 +50,15 @@ lotr <- lotr_wide %>%
 
 
 ## Course
+1. Les hobbit masculins ont dit 8780 mots.
+2. 
+```{r}
+lotr_group_race_gender <- lotr %>% group_by(Race, Sexe) %>% summarise(NbMots = sum(Mots))
+ggplot(lotr_group_race_gender, mapping=aes(Sexe, NbMots, fill=Sexe)) + geom_col() + facet_grid(cols=vars(Race)) + labs(title="Nombre de mots dit par race et par genre", y="Nombre de mots") + theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
+```
 
-Une certaine race domine-t-elle toute la trilogie ? (indice : regrouper par `Race`)
+3. Une certaine race domine-t-elle toute la trilogie ? (indice : regrouper par `Race`)
+Réponse: Hobbit
 
 ```{r}
 lotr_group <- lotr %>% group_by(Race) %>% summarise(NbMots = sum(Mots))
@@ -57,32 +66,35 @@ library(ggplot2)
 ggplot(data = lotr_group, mapping = aes(x = reorder(Race, -NbMots), y=NbMots, fill=Race)) + geom_col()+ geom_text(aes(label= NbMots), vjust=-0.5) + labs(title="Nombre de mots selon la race", x="Race", y="Nombre de mots") + theme_minimal() + theme(plot.title = element_text(face = "bold", hjust = 0.5))
 ```
 
-
 ## Genre et cinéma
 
-Est-ce qu'un certain genre domine un film ? (lol bien sûr que c'est le cas, mais quand même, représentez-le graphiquement) (Astuce : groupez à la fois par `Gender` et `Film`.) Expérimentez avec le remplissage par `Gender` ou `Film` et le facettage par `Gender` ou `Film`.
+4. Est-ce qu'un certain genre domine un film ? (lol bien sûr que c'est le cas, mais quand même, représentez-le graphiquement) (Astuce : groupez à la fois par `Gender` et `Film`.) Expérimentez avec le remplissage par `Gender` ou `Film` et le facettage par `Gender` ou `Film`.
+Réponse: le genre masculin domine tout les films.
 
 ```{r}
 lotr_group_gender_film <- lotr %>% group_by(Film, Sexe) %>% summarise(NbMots = sum(Mots))
-ggplot(lotr_group_gender_film, mapping=aes(Sexe, NbMots, fill=Sexe)) + geom_col() + facet_grid(cols=vars(Film)) + labs(title="Nombre de mots par film et par genre", y="Nombre de mots") + theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
+ggplot(lotr_group_gender_film, mapping=aes(Sexe, NbMots, fill=Sexe)) + geom_col() + facet_grid(cols=vars(Film)) + labs(title="Nombre de mots dit par film et par genre", y="Nombre de mots") + theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
 ```
 
 
 ## Course et cinéma
 
-La race dominante diffère-t-elle d'un film à l'autre ? (Astuce : regrouper à la fois par `Race` et `Film`.) Expérimentez avec le remplissage par `Race` ou `Film` et le facettage par `Race` ou `Film`.
+5. La race dominante diffère-t-elle d'un film à l'autre ? (Astuce : regrouper à la fois par `Race` et `Film`.) Expérimentez avec le remplissage par `Race` ou `Film` et le facettage par `Race` ou `Film`.
+Réponse: Oui, dans le premier film, c'est les hobbits et dans les deux autres, c'est les humains.
 
 ```{r}
-# Faites des trucs ici
+lotr_group_film_race <- lotr %>% group_by(Film, Race) %>% summarise(NbMots = sum(Mots))
+ggplot(lotr_group_film_race, mapping = aes(Race, NbMots, fill=Race)) + geom_col() + facet_grid(cols = vars(Film)) + labs(title = "Nombre de mots dit regroupé par film et par race", y="Nombre de mots") + theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
 ```
 
 
 ## Race et genre et film
 
-Créez un graphique qui visualise simultanément le nombre de mots prononcés par race, sexe et film. Utilisez le bloc de données "lotr" complet. Vous n'avez pas besoin de créer un nouvel ensemble de données résumées (avec `group_by(Race, Gender, Film)`) car les données d'origine ont déjà une ligne pour chacune d'entre elles (vous pourriez créer un ensemble de données résumées, mais il serait identique à la version complète).
+6. Créez un graphique qui visualise simultanément le nombre de mots prononcés par race, sexe et film. Utilisez le bloc de données "lotr" complet. Vous n'avez pas besoin de créer un nouvel ensemble de données résumées (avec `group_by(Race, Gender, Film)`) car les données d'origine ont déjà une ligne pour chacune d'entre elles (vous pourriez créer un ensemble de données résumées, mais il serait identique à la version complète).
 
 Vous devez afficher `Race`, `Gender` et `Film` en même temps, mais vous n'avez que deux esthétiques possibles (`x` et `fill`), vous devrez donc également faire face à la troisième. Jouez avec différentes combinaisons (par exemple, essayez `x = Race`, puis `x = Film`) jusqu'à ce que vous en trouviez une qui raconte l'histoire la plus claire. Pour vous amuser, ajoutez un calque `labs()` pour ajouter un titre, un sous-titre et une légende.
 
 ```{r}
-# Faites des trucs ici
+ggplot(lotr, mapping = aes(Race, Mots, fill=Sexe)) + geom_col() + facet_grid(cols = vars(Film)) + labs(title="Nombre de mots dit par film et par race", subtitle = "Trilogie du seigneur des anneaux") + theme(plot.title=element_text(face = "bold", hjust=0.5), plot.subtitle = element_text(hjust=0.5))
 ```
+
