@@ -1,13 +1,19 @@
 ---
 title: "Exercice 4"
-author: "Ton nom"
-date: "Date"
+author: "Gabriel Aubin-Moreau"
+date: "2022-09-14"
 output: html_document
 ---
 
 # Tâche 1 : Réflexion
 
-Mettez votre réflexion ici des lectures sur les comptes et proportions
+Pour les comptes:
+
+Il faut porter une attention particulière à l'organisation de nos graphiques à barres selon le contexte. Par exemple, lorsque j'ai plusieurs catégories qui n'ont pas d'ordre naturel. Il faut mettre les barre en ordre décroissant ou croissant pour permettre une meilleure lecture. Si jamais on a beaucoup de catégories, on peut utiliser un tracé de point ou dot plot mais, on peut aussi utiliser une carte de chaleur ou heatmap.
+
+Pour les proportions: 
+J'ai compris en lisant que les avis sur les diagrammes circulaire ou pie chart était partagé. Cependant, si on les utilise dans le bon contexte, ils peuvent nous être très utile. Par exemple, si on veut visualiser des données faisant partie d'un tout. Le diagramme circulaire peut se servire utile. Sa meilleure utilisation est lorsqu'on veut visualiser des fractions simples comme 1/2, 1/3 ou 1/4.
+Une excellente alternative aux diagramme circulaire est le graphique gaufré ou waffle chart. Qui permet grâce aux carrés qui représente une unité d'évaluer facilement la taille d'une catégorie.  
 
 
 # Tâche 2 : Construction pandémique essentielle
@@ -19,7 +25,6 @@ Nous chargeons et nettoyons d'abord les données (téléchargées en mai 2020, v
 ```{r load-clean-data, avertissement=FAUX, message=FAUX}
 # Vous n'aurez besoin que de la bibliothèque tidyverse pour cet exercice
 library(tidyverse)
-
 # Charger les données d'origine
 essential_raw <- read_csv("data/EssentialConstruction.csv")
 
@@ -27,10 +32,10 @@ essential_raw <- read_csv("data/EssentialConstruction.csv")
 # Certains noms d'arrondissements sont en MAJUSCULES, nous utilisons donc str_to_title() pour convertir
 # tout dans la colonne
 # Nous faisons également des facteurs ARRONDISSEMENT et CATÉGORIE (ou variables catégorielles)
-essentiel <- essentiel_raw %>%
-  mutate(ARRONDISSEMENT = str_to_title(ARRONDISSEMENT),
-         ARRONDISSEMENT = facteur(ARRONDISSEMENT),
-         CATÉGORIE = facteur(CATÉGORIE))
+essentiel <- essential_raw %>%
+  mutate(BOROUGH = str_to_title(BOROUGH),
+         BOROUGH = factor(BOROUGH),
+         CATEGORY = factor(CATEGORY))
 ```
 
 ## Projets approuvés par arrondissement
@@ -39,27 +44,37 @@ essentiel <- essentiel_raw %>%
 
 ```{r resume-data-borough}
 essentiel_par_arrondissement <- essentiel %>%
-  group_by(ARRONDISSEMENT) %>%
+  group_by(BOROUGH) %>%
   summarise(total = n()) %>%
-  mutate(proportion = total / somme(total))
+  mutate(proportion = total / sum(total))
 ```
 
 ```{r résumé-parcelle-arrondissement}
-# Ajouter un graphique avec geom_col() ici
+ggplot(essentiel_par_arrondissement, 
+       mapping=aes(reorder(BOROUGH, -total), total, fill=BOROUGH)) +
+  geom_col() +
+  guides(fill = "none") +
+  labs(title="Nombre de projets approuvés par arrondissement", y="Total", x="Arrondissement") +
+  theme(plot.title=element_text(face="bold", hjust=0.5))
 ```
 
 
 ## Projets approuvés par catégorie
 
 ```{r resume-data-category}
-# Créer un jeu de données résumé des projets par catégorie
-#
-# Je ne vous donnerai pas le code pour cela (gros indice cependant : copiez le code pour le
-# résumé d'arrondissement et ne changer qu'une chose)
+essentiel_par_categorie <- essentiel %>% 
+  group_by(CATEGORY) %>% 
+  summarise(Total = n()) %>% 
+  mutate(Proportion = Total / sum(Total))
 ```
 
 ```{r résumé-catégorie-intrigue}
-# Ajoutez un graphique en forme de sucette (lollipop) ici
+ggplot(essentiel_par_categorie, 
+       mapping = aes(Total, reorder(CATEGORY, Total), color = CATEGORY)) +
+  geom_pointrange(aes(xmin = 0, xmax = Total)) +
+  guides(color = "none") +
+  labs(title = "Nombre de projets approuvés par catégorie", y = "Catégorie") +
+  theme(plot.title=element_text(face="bold", hjust=0.5))
 ```
 
 
