@@ -7,7 +7,15 @@ output: html_document
 
 # Tâche 1 : Réflexion
 
-Mettez votre réflexion ici
+Pourquoi est-il important de visualiser les variables et les données ?
+Il est important de visualiser les variables et les données pour: voir des corrélation, des tendances, faire des comparaison, etc.
+
+Que signifie mapper des données pour représenter graphiquement l’esthétique ?
+Cela signifie qu'une fois l'ensemble de données chargé, il faut indiquer ou mapper à R quelle variable doit aller sur quel axe et d'autres spécifiquation qui vont créer le rendu visuel ou l'esthétique de notre graphique. Par exemple, on indique la majorité du temps quel variable utiliser pour l'axe des x et des y et parfois on sépare les données par couleur selon une autre variable.
+
+Quelles données ont été mappées à quelle esthétique dans la vidéo de Rosling ?
+L'espérance de vie a été mappée à l'axe des y, le revenue par habitant a été mappé à l'axe des x et le continent a été mappé à la couleur 
+
 
 
 # Tâche 2 : Le Seigneur des Anneaux
@@ -44,7 +52,9 @@ lotr <- lotr_wide %>%
 Une certaine race domine-t-elle toute la trilogie ? (indice : regrouper par `Race`)
 
 ```{r}
-# Faites des trucs ici
+lotr_group <- lotr %>% group_by(Race) %>% summarise(NbMots = sum(Mots))
+library(ggplot2)
+ggplot(data = lotr_group, mapping = aes(x = reorder(Race, -NbMots), y=NbMots, fill=Race)) + geom_col()+ geom_text(aes(label= NbMots), vjust=-0.5) + labs(title="Nombre de mots selon la race", x="Race", y="Nombre de mots") + theme_minimal() + theme(plot.title = element_text(face = "bold", hjust = 0.5))
 ```
 
 
@@ -53,7 +63,8 @@ Une certaine race domine-t-elle toute la trilogie ? (indice : regrouper par `Rac
 Est-ce qu'un certain genre domine un film ? (lol bien sûr que c'est le cas, mais quand même, représentez-le graphiquement) (Astuce : groupez à la fois par `Gender` et `Film`.) Expérimentez avec le remplissage par `Gender` ou `Film` et le facettage par `Gender` ou `Film`.
 
 ```{r}
-# Faites des trucs ici
+lotr_group_gender_film <- lotr %>% group_by(Film, Sexe) %>% summarise(NbMots = sum(Mots))
+ggplot(lotr_group_gender_film, mapping=aes(Sexe, NbMots, fill=Sexe)) + geom_col() + facet_grid(cols=vars(Film)) + labs(title="Nombre de mots par film et par genre", y="Nombre de mots") + theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
 ```
 
 
