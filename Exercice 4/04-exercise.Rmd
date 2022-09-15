@@ -11,7 +11,8 @@ Pour les comptes:
 
 Il faut porter une attention particulière à l'organisation de nos graphiques à barres selon le contexte. Par exemple, lorsque j'ai plusieurs catégories qui n'ont pas d'ordre naturel. Il faut mettre les barre en ordre décroissant ou croissant pour permettre une meilleure lecture. Si jamais on a beaucoup de catégories, on peut utiliser un tracé de point ou dot plot mais, on peut aussi utiliser une carte de chaleur ou heatmap.
 
-Pour les proportions: 
+Pour les proportions:
+
 J'ai compris en lisant que les avis sur les diagrammes circulaire ou pie chart était partagé. Cependant, si on les utilise dans le bon contexte, ils peuvent nous être très utile. Par exemple, si on veut visualiser des données faisant partie d'un tout. Le diagramme circulaire peut se servire utile. Sa meilleure utilisation est lorsqu'on veut visualiser des fractions simples comme 1/2, 1/3 ou 1/4.
 Une excellente alternative aux diagramme circulaire est le graphique gaufré ou waffle chart. Qui permet grâce aux carrés qui représente une unité d'évaluer facilement la taille d'une catégorie.  
 
@@ -22,7 +23,7 @@ Une excellente alternative aux diagramme circulaire est le graphique gaufré ou 
 
 Nous chargeons et nettoyons d'abord les données (téléchargées en mai 2020, vous pouvez aller charger des données plus récentes!):
 
-```{r load-clean-data, avertissement=FAUX, message=FAUX}
+```{r load-clean-data, warning=FALSE, message=FALSE}
 # Vous n'aurez besoin que de la bibliothèque tidyverse pour cet exercice
 library(tidyverse)
 # Charger les données d'origine
@@ -81,19 +82,20 @@ ggplot(essentiel_par_categorie,
 ## Projets approuvés dans l'arrondissement et la catégorie
 
 ```{r resume-data-heatmap}
-# Créer un ensemble de données résumé des projets par arrondissement et par catégorie
-#
-# Je ne vous donnerai pas non plus le code pour faire le résumé de la heatmap. Vous avez
-# besoin de grouper par deux variables pour faire le résumé. IMPORTANT, vous aurez également
-# besoin d'ajouter un autre group_by() entre summarise() et mutate(), sinon,
-# R calculera des pourcentages dans des groupes inattendus.
-#
-# Si vous voulez que les pourcentages des catégories s'additionnent à 100% dans chaque arrondissement,
-# vous voudrez grouper par arrondissement avant de calculer la proportion ; si tu veux
-# les pourcentages d'arrondissements à additionner jusqu'à 100% dans chaque catégorie, vous voudrez
-# groupe par catégorie
+essentiel_par_categorie_arrondissement <- essentiel %>% 
+  group_by(CATEGORY, BOROUGH) %>% 
+  summarise(Total = n()) %>%
+  group_by(BOROUGH) %>%
+  mutate(Proportion = Total / sum(Total))
 ```
 
 ```{r plot-heatmap}
-# Ajoutez une heatmap ici avec geom_tile()
+ggplot(essentiel_par_categorie_arrondissement, 
+       mapping = aes(BOROUGH, CATEGORY,  fill = Proportion)) +
+  geom_tile() +
+  scale_fill_gradient(low = "Blue", high = "Orange") +
+  labs(title = "Nombre de projets approuvés selon la catégorie et l'arrondissement",
+       x = "Arrondissement", y = "Catégorie") +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5))
 ```
