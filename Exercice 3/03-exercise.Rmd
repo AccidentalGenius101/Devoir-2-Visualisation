@@ -3,8 +3,8 @@ title: "Exercice 3"
 author: "Gabriel Aubin-Moreau"
 date: "2022-09-14"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 # Tâche 1 : Réflexion
